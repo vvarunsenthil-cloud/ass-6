@@ -1,0 +1,13 @@
+from algopy import ARC4Contract, GlobalState, Txn, UInt64
+
+class DonationContract(ARC4Contract):
+    total_donations = GlobalState(UInt64)
+
+    def __init__(self) -> None:
+        self.total_donations.value = UInt64(0)
+
+    def donate(self) -> None:
+        self.total_donations.value = self.total_donations.value + Txn.amount
+
+    def get_total_donations(self) -> UInt64:
+        return self.total_donations.value

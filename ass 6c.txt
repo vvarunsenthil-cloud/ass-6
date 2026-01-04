@@ -1,0 +1,49 @@
+import { useEffect, useState } from "react";
+import { Algodv2 } from "algosdk";
+import { DonationContractClient } from "./contracts/DonationContractClient";
+
+const algod = new Algodv2(
+  "",
+  "https://testnet-api.algonode.cloud",
+  ""
+);
+
+function App() {
+  const [total, setTotal] = useState(0);
+
+  const client = new DonationContractClient(
+    { resolveBy: "id", id: 12345678 }, // replace with deployed app id
+    algod
+  );
+
+  const fetchTotal = async () => {
+    const result = await client.get_total_donations();
+    setTotal(Number(result.return));
+  };
+
+  const donate = async () => {
+    await client.donate(
+      {},
+      {
+        sendParams: {
+          fee: 1000,
+        },
+      }
+    );
+    fetchTotal();
+  };
+
+  useEffect(() => {
+    fetchTotal();
+  }, []);
+
+  return (
+    <div style={{ padding: "40px" }}>
+      <h1>AlgoDonate</h1>
+      <p>Total Donations: {total}</p>
+      <button onClick={donate}>Donate</button>
+    </div>
+  );
+}
+
+export default App;
